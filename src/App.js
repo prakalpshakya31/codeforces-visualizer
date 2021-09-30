@@ -6,6 +6,7 @@ import {
 import { Container } from 'react-bootstrap'
 import HomeScreen from './screens/HomeScreen'
 import CompareScreen from './screens/CompareScreen'
+import UserScreen from './screens/UserScreen'
 
 const App = () => {
   return (
@@ -17,6 +18,10 @@ const App = () => {
           <Route
             path='/compare'
             component={CompareScreen}
+          />
+          <Route
+            path='/:user'
+            component={UserScreen}
           />
         </Container>
       </main>
