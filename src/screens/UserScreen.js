@@ -64,6 +64,21 @@ const UserScreen = ({ match }) => {
     }
   )
 
+  let tags = {}
+  Object.entries(submission).map(([key, value]) => {
+    // console.log(value.problem.tags)
+    value.problem.tags.map((tag) => {
+      if (tags[tag]) tags[tag]++
+      else tags[tag] = 1
+    })
+  })
+
+  let dataTag = []
+  dataTag.push(['Task', 'Hours per Day'])
+  Object.entries(tags).map(([key, value]) => {
+    dataTag.push([key, value])
+  })
+
   return (
     <>
       <h1 className='text-center my-3 mb-4'>Profile</h1>
@@ -150,6 +165,26 @@ const UserScreen = ({ match }) => {
           />
         </Col>
       </Row>
+      <div
+        className='my-4'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Chart
+          width={'800px'}
+          height={'500px'}
+          chartType='PieChart'
+          loader={<div>Loading Chart</div>}
+          data={dataTag}
+          options={{
+            title: `Tags of ${user.firstName} ${user.lastName}`,
+          }}
+          rootProps={{ 'data-testid': '1' }}
+        />
+      </div>
     </>
   )
 }
