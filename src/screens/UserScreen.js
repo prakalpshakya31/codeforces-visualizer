@@ -79,6 +79,43 @@ const UserScreen = ({ match }) => {
     dataTag.push([key, value])
   })
 
+  let ratings = {}
+  Object.entries(submission).map(([key, value]) => {
+    if (
+      ratings[value.problem.rating] &&
+      value.problem.rating &&
+      value.verdict == 'OK'
+    )
+      ratings[value.problem.rating]++
+    else if (value.problem.rating && value.verdict == 'OK')
+      ratings[value.problem.rating] = 1
+  })
+
+  let dataRating = []
+  dataRating.push(['', 'Solved'])
+  Object.entries(ratings).map(([key, value]) => {
+    dataRating.push([key, value])
+  })
+
+  let indexes = {}
+  Object.entries(submission).map(([key, value]) => {
+    if (
+      indexes[value.problem.index] &&
+      value.problem.index &&
+      value.verdict == 'OK'
+    )
+      indexes[value.problem.index]++
+    else if (value.problem.index && value.verdict == 'OK')
+      indexes[value.problem.index] = 1
+  })
+
+  let dataIndex = []
+  dataIndex.push(['', 'Solved'])
+  Object.entries(indexes).map(([key, value]) => {
+    dataIndex.push([key, value])
+  })
+  dataIndex.sort()
+
   return (
     <>
       <h1 className='text-center my-3 mb-4'>Profile</h1>
@@ -174,7 +211,7 @@ const UserScreen = ({ match }) => {
         }}
       >
         <Chart
-          width={'800px'}
+          width={'700px'}
           height={'500px'}
           chartType='PieChart'
           loader={<div>Loading Chart</div>}
@@ -185,6 +222,54 @@ const UserScreen = ({ match }) => {
           rootProps={{ 'data-testid': '1' }}
         />
       </div>
+      <Row
+        className='my-4'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Chart
+          width={'1000px'}
+          height={'300px'}
+          chartType='Bar'
+          loader={<div>Loading Chart</div>}
+          data={dataRating}
+          options={{
+            // Material design options
+            chart: {
+              title: `Problem Ratings of ${user.firstName} ${user.lastName}`,
+            },
+          }}
+          // For tests
+          rootProps={{ 'data-testid': '2' }}
+        />
+      </Row>
+      <Row
+        className='my-4'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Chart
+          width={'1000px'}
+          height={'300px'}
+          chartType='Bar'
+          loader={<div>Loading Chart</div>}
+          data={dataIndex}
+          options={{
+            // Material design options
+            chart: {
+              title: `Problem Indexes of ${user.firstName} ${user.lastName}`,
+            },
+          }}
+          // For tests
+          rootProps={{ 'data-testid': '2' }}
+        />
+      </Row>
     </>
   )
 }
