@@ -116,60 +116,130 @@ const UserScreen = ({ match }) => {
   })
   dataIndex.sort()
 
+  let dataContestRating = []
+  dataContestRating.push(['x', 'Contest Rating'])
+  let counter = 1
+  Object.entries(contest).map(([key, value]) => {
+    dataContestRating.push([counter, value.newRating])
+    counter++
+  })
+
+  let totalTried = 0,
+    totalSolved = 0,
+    averageAttempts = 0
+  let totalProblems = {}
+  Object.entries(submission).map(([key, value]) => {
+    if (totalProblems[value.problem.name])
+      totalProblems[value.problem.name]++
+    else {
+      totalProblems[value.problem.name] = 1
+      totalTried++
+      if (value.verdict == 'OK') totalSolved++
+    }
+  })
+  averageAttempts = (
+    submission.length / totalSolved
+  ).toFixed(2)
+
+  let solvedWithOneSubmission = 0,
+    maxAttempts = 0
+  Object.entries(totalProblems).map(([key, value]) => {
+    if (value == 1) solvedWithOneSubmission++
+    if (value > maxAttempts) maxAttempts = value
+  })
+
+  let bestRank = 100000,
+    worstRank = 0,
+    maxUp = -1000,
+    maxDown = 1000
+
+  Object.entries(contest).map(([key, value]) => {
+    if (value.rank < bestRank) bestRank = value.rank
+    if (value.rank > worstRank) worstRank = value.rank
+    if (value.newRating - value.oldRating > maxUp)
+      maxUp = value.newRating - value.oldRating
+    if (value.newRating - value.oldRating < maxDown)
+      maxDown = value.newRating - value.oldRating
+  })
+
   return (
     <>
       <h1 className='text-center my-3 mb-4'>Profile</h1>
-      <Card>
-        <Row>
-          <Col>
-            <Image
-              src={user.avatar}
-              fluid
-              rounded
-              width='100%'
-            />
-          </Col>
-          <Col className='my-4'>
-            <h4>
-              <Row>
-                Name: {user.firstName} {user.lastName}
-              </Row>
-            </h4>
-            <h4>
-              <Row>Rank: {user.rank}</Row>
-            </h4>
-            <h4>
-              <Row>Rating: {user.rating}</Row>
-            </h4>
-          </Col>
-          <Col className='my-4'>
-            <h4>
-              <Row>Country: {user.country}</Row>
-            </h4>
-            {/* from statusInfo */}
-            <h4>
-              <Row>
-                Total Submissions: {submission.length}
-              </Row>
-            </h4>
-            <h4>
-              <Row>Rating: {user.rating}</Row>
-            </h4>
-          </Col>
-          <Col className='my-4'>
-            {/* from contestInfo */}
-            <h4>
-              <Row>Total Contests: {contest.length}</Row>
-            </h4>
-            <h4>
-              <Row>Best Rank: {user.maxRank}</Row>
-            </h4>
-            <h4>
-              <Row>Best Rating: {user.maxRating}</Row>
-            </h4>
-          </Col>
-        </Row>
-      </Card>
+      <Row>
+        <Col>
+          <Row>
+            <Col>Some numbers about</Col>
+            <Col>{user.handle}</Col>
+          </Row>
+          <Row>
+            <Col>Tried</Col>
+            <Col>{totalTried}</Col>
+          </Row>
+          <Row>
+            <Col>Solved</Col>
+            <Col>{totalSolved}</Col>
+          </Row>
+          <Row>
+            <Col>Average attempts</Col>
+            <Col>{averageAttempts}</Col>
+          </Row>
+          <Row>
+            <Col>Max attempts</Col>
+            <Col>{maxAttempts}</Col>
+          </Row>
+          <Row>
+            <Col>Solved with one submission</Col>
+            <Col>{solvedWithOneSubmission}</Col>
+          </Row>
+        </Col>
+
+        <Col>
+          <Row>
+            <Col>Contests of</Col>
+            <Col>{user.handle}</Col>
+          </Row>
+          <Row>
+            <Col>Number of contests</Col>
+            <Col>{contest.length}</Col>
+          </Row>
+          <Row>
+            <Col>Best rank</Col>
+            <Col>{bestRank}</Col>
+          </Row>
+          <Row>
+            <Col>Worst rank</Col>
+            <Col>{worstRank}</Col>
+          </Row>
+          <Row>
+            <Col>Max up</Col>
+            <Col>{maxUp}</Col>
+          </Row>
+          <Row>
+            <Col>Max down</Col>
+            <Col>{maxDown}</Col>
+          </Row>
+        </Col>
+      </Row>
+      <Row
+        className='my-4'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Chart
+          width={'700px'}
+          height={'400px'}
+          chartType='LineChart'
+          loader={<div>Loading Chart</div>}
+          data={dataContestRating}
+          options={{
+            title: 'Contest Ratings',
+          }}
+          rootProps={{ 'data-testid': '1' }}
+        />
+      </Row>
       <Row className='my-4'>
         <Col>
           <Chart
